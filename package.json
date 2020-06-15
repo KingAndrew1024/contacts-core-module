@@ -1,0 +1,50 @@
+{
+  "name": "@virket/contacts-core",
+  "version": "0.0.15",
+  "description": "ionic Contacts core module (interfaces, models, repositories, services, state management and more)",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "ngc": "ngc",
+    "build": "rm -rf aot dist && npm run ngc",
+    "publishPackage": "npm run build && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KingAndrew1024/contacts-core-module.git"
+  },
+  "keywords": [
+    "ionic",
+    "contacts",
+    "Angular 9",
+    "virket"
+  ],
+  "author": "Andres Vergara @ virket.com",
+  "license": "MIT",
+  "homepage": "https://github.com/KingAndrew1024/contacts-core-module#readme",
+  "devDependencies": {
+    "@angular/common": "~9.1.6",
+    "@angular/compiler": "~9.1.6",
+    "@angular/compiler-cli": "~9.1.6",
+    "@angular/core": "~9.1.6",
+    "@angular/platform-browser": "~9.1.6",
+    "@angular/platform-browser-dynamic": "~9.1.6",
+    "@types/node": "^12.11.1",
+    "zone.js": "~0.10.2",
+    "rxjs": "~6.5.1",
+    "typescript": "~3.8.3"
+  },
+  "dependencies": {
+    "@ionic-native/contacts": "^5.26.0",
+    "@ionic-native/core": "^5.26.0",
+    "@ngrx/effects": "^9.2.0",
+    "@ngrx/store": "^9.2.0",
+    "cordova-plugin-contacts": "^3.0.1"
+  },
+  "bugs": {
+    "url": "https://github.com/KingAndrew1024/contacts-core-module/issues"
+  }
+}
