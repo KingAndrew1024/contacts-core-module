@@ -63,13 +63,12 @@ export class ContactsRepository implements IContactRepository {
 
     importContacts(payload: Array<any>): Observable<IHttpBasicResponse<IImportContactsResponse>> {
 
-        payload.forEach(c => delete c.phone_code)
-
         let data = { export_data: JSON.stringify({ contacts: payload }) }
 
         let urlSearchParams = new URLSearchParams();
         Object.keys(data).forEach((key: string, i: number) => {
-            urlSearchParams.append(key, data[key]);
+            if(key != 'phone_code')
+                urlSearchParams.append(key, data[key]);
         });
         const body = urlSearchParams.toString()
 
