@@ -1,6 +1,6 @@
 {
   "name": "@virket/contacts-core",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "ionic Contacts core module (interfaces, models, repositories, services, state management and more)",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
