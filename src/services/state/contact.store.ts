@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import * as fromSelector from '../../store/contact.selectors';
 import * as fromContacts from '../../store/contact.reducer';
 import * as fromActions from '../../store/contact.actions';
-import { CONTACT_TYPE, IContactForm } from '../../core/contracts/IContact.repository';
+import { CONTACT_TYPE, IContactForm, IGenericInteractionProps } from '../../core/contracts/IContact.repository';
 import { ContactModel } from '../../core/models/contact.model';
 
 
@@ -84,19 +84,23 @@ export class ContactStore {
         return this.store.select(fromSelector.hasBeenFetched);
     }
 
-    fetchCountryCodes(){
+    fetchCountryCodes() {
         this.store.dispatch(fromActions.FetchCountryCodesBeginAction());
     }
 
-    get LoadingCodes$(){
+    get LoadingCodes$() {
         return this.store.select(fromSelector.getIsLoadingCountryCodes);
     }
 
-    get LoadinCodesErrors$(){
+    get LoadinCodesErrors$() {
         return this.store.select(fromSelector.getCountryCodesErrors);
     }
 
-    get CountryCodes$(){
+    get CountryCodes$() {
         return this.store.select(fromSelector.getCountryCodes);
+    }
+
+    createInteraction(contactId: number, config: IGenericInteractionProps) {
+        this.store.dispatch(fromActions.CreateInteractionBeginAction({ contactId, config }));
     }
 }

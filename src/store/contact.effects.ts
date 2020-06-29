@@ -138,6 +138,22 @@ export class ContactsEffects {
         )
     )
 
+    createInteraction$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(fromActions.ContactsActionTypes.CreateInteractionBegin),
+            switchMap((action: any) => {
+                return this.service.createInteraction(action.contactId, action.config).pipe(
+                    map(interaction => {
+                        return fromActions.CreateInteractionSuccessAction({ interaction })
+                    }),
+                    catchError(errors => {
+                        return of(fromActions.CreateInteractionFailAction({ errors }))
+                    })
+                )
+            })
+        )
+    )
+
     constructor(
         private actions$: Actions,
         private store$: Store<AppState>,

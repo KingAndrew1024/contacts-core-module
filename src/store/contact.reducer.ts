@@ -124,6 +124,17 @@ const reducer = createReducer(
             }
         })
     ),
+    on(
+        fromActions.CreateInteractionFailAction,
+        (state, action): ContactState => ({
+            ...state,
+            interactions: {
+                ...state.interactions,
+                isLoading: false,
+                error: { after: getErrorActionType(action.type), error: action.errors }
+            }
+        })
+    ),
 
     //ON Success Actions:
     //FETCH
@@ -149,6 +160,14 @@ const reducer = createReducer(
             ...state.interactions,
             isLoading: false,
             items: action.interactions
+        }
+    })),
+    on(fromActions.CreateInteractionSuccessAction, (state, action): ContactState => ({
+        ...state,
+        interactions: {
+            ...state.interactions,
+            isLoading: false,
+            items: [action.interaction, ...state.interactions.items]
         }
     })),
 

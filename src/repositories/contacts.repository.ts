@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { IHttpBasicResponse } from '../core/contracts/IHttpBasicResponse';
 import { AppSettingsService } from '../providers/global-params';
-import { IContactRepository, ICountryCodes, IContactApiProps, IContactInteractionsApiProps, IContactForm, IImportContactsResponse } from '../core/contracts/IContact.repository';
+import { IContactRepository, ICountryCodes, IContactApiProps, IContactInteractionsApiProps, IContactForm, IImportContactsResponse, IGenericInteractionProps } from '../core/contracts/IContact.repository';
 
 
 @Injectable()
@@ -66,7 +66,7 @@ export class ContactsRepository implements IContactRepository {
         let data = { export_data: JSON.stringify({ contacts: payload }) }
 
         let urlSearchParams = new URLSearchParams();
-        Object.keys(data).forEach((key: string, i: number) => {
+        Object.keys(data).forEach((key: string) => {
             if(key != 'phone_code')
                 urlSearchParams.append(key, data[key]);
         });
@@ -76,6 +76,17 @@ export class ContactsRepository implements IContactRepository {
             `${this.BASE_URL}/export_from_mobile`,
             body
         );
+    }
+
+    createInteraction(contactId: number, config: IGenericInteractionProps){
+
+        let urlSearchParams = new URLSearchParams();
+        Object.keys(config).forEach((key: string) => {
+            urlSearchParams.append(key, config[key]);
+        });
+        const body = urlSearchParams.toString()
+
+        return this.httpClient.post<IHttpBasicResponse<IContactInteractionsApiProps>>(`${this.BASE_URL}/create_interaction/${contactId}`, body);
     }
 }
 

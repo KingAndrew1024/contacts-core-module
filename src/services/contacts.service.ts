@@ -5,7 +5,7 @@ import { Contacts, ContactFindOptions, ContactFieldType, Contact } from '@ionic-
 import { ContactStore } from './state/contact.store';
 import { ContactsRepository, COUNTRY_CALLING_CODES } from '../repositories/contacts.repository';
 import { ContactModel, ContactInteractionModel } from '../core/models/contact.model';
-import { ICountryCodes, IContactForm, IImportContactsForm } from '../core/contracts/IContact.repository';
+import { ICountryCodes, IContactForm, IImportContactsForm, IGenericInteractionProps } from '../core/contracts/IContact.repository';
 import { IContactsService } from '../core/contracts/IContact.service';
 
 
@@ -136,11 +136,8 @@ export class ContactsService implements IContactsService<Contact, ContactModel> 
     loadContactInteractions(contactId: number) {
         return this.repository.getContactInteractions(contactId).pipe(
             map((response) => {
-                
-
                 return response.data.map(interaction => {
-                    let interactionModel = ContactInteractionModel.fromDataResponse(interaction);
-                    return interactionModel;
+                    return ContactInteractionModel.fromDataResponse(interaction);
                 });
             }),
             catchError(error => {
@@ -192,8 +189,18 @@ export class ContactsService implements IContactsService<Contact, ContactModel> 
     importContacts(contactList: IImportContactsForm[]): Observable<Array<ContactModel>> {
         return this.repository.importContacts(contactList).pipe(
             map((response) => {
-                
                 return response.data.contacts_exported.map(c => ContactModel.fromDataResponse(c))
+            }),
+            catchError(error => {
+                throw error
+            })
+        )
+    }
+
+    createInteraction(contactId: number, config: IGenericInteractionProps){
+        return this.repository.createInteraction(contactId, config).pipe(
+            map((response) => {
+                return ContactInteractionModel.fromDataResponse(response.data);
             }),
             catchError(error => {
                 throw error

@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { IContactForm, IImportContactsForm, ICountryCodes } from './IContact.repository';
+import { IContactForm, IImportContactsForm, ICountryCodes, IGenericInteractionProps } from './IContact.repository';
 
 export interface IContactsService<T1, T2> {
     loadRemoteContacts(): Observable<T2[]>;
@@ -12,4 +12,5 @@ export interface IContactsService<T1, T2> {
     updateContact(form: IContactForm): Observable<T2>;
     importContacts(contactList: IImportContactsForm[]): Observable<T2[]>;
     pickOne(phone: string): Observable<T1 | null>
+    createInteraction(contactId: number, config: IGenericInteractionProps): Observable<any>
 }

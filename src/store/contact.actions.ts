@@ -1,6 +1,6 @@
 import { createAction, props } from "@ngrx/store";
 import { ContactModel } from '../core/models/contact.model';
-import { IContactForm, CONTACT_TYPE, ICountryCodes } from '../core/contracts/IContact.repository';
+import { IContactForm, CONTACT_TYPE, ICountryCodes, IGenericInteractionProps } from '../core/contracts/IContact.repository';
 
 
 export enum ContactsActionTypes {
@@ -36,6 +36,10 @@ export enum ContactsActionTypes {
     FetchCountryCodesBegin = "[Contacs] Fetch Country Codes Begin",
     FetchCountryCodesSuccess = "[Contacs] Fetch Country Codes Success",
     FetchCountryCodesFail = "[Contacs] Fetch Country Codes Fail",
+
+    CreateInteractionBegin = "[Contacs] Create Interacion Begin",
+    CreateInteractionSuccess = "[Contacs] Create Interacion Success",
+    CreateInteractionFail = "[Contacs] Create Interacion Fail"
 }
 
 // Fetch contacts from remote API
@@ -159,5 +163,20 @@ export const FetchCountryCodesSuccessAction = createAction(
 
 export const FetchCountryCodesFailAction = createAction(
     ContactsActionTypes.FetchCountryCodesFail,
+    props<{ errors: any }>()
+)
+
+export const CreateInteractionBeginAction = createAction(
+    ContactsActionTypes.CreateInteractionBegin,
+    props<{ contactId: number, config: IGenericInteractionProps}>()
+)
+
+export const CreateInteractionSuccessAction = createAction(
+    ContactsActionTypes.CreateInteractionSuccess,
+    props<{ interaction: any }>()
+)
+
+export const CreateInteractionFailAction = createAction(
+    ContactsActionTypes.CreateInteractionFail,
     props<{ errors: any }>()
 )

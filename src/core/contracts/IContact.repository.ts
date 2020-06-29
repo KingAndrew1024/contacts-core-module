@@ -9,6 +9,7 @@ export interface IContactRepository {
     deleteContact(contactId: number): Observable<IHttpBasicResponse<string>>; //success | error
     updateContact(form: IContactForm): Observable<IHttpBasicResponse<IContactApiProps>>;
     importContacts(payload: IImportContactsForm[]): Observable<IHttpBasicResponse<IImportContactsResponse>>;
+    createInteraction(contactId: number, config: IGenericInteractionProps): Observable<IHttpBasicResponse<IContactInteractionsApiProps>>;
 }
 export type CONTACT_TYPE = "ALL" | "NOT_SPECIFIED" | "PROSPECT" | "CLIENT";
 export type CONTACT_ORIGIN = "MANUAL" | "MOBILE_APP" | "WEB" | "WEB_APP" | "UNKNOWN";
@@ -85,6 +86,12 @@ export interface IContactInteractionsApiProps{
     action_type: INTERACTION_TYPE
     created_at: string
     display_text: string
+}
+
+export interface IGenericInteractionProps{
+    action_type: string
+    entity: string
+    entity_id: number
 }
 
 export interface ICountryCodes {

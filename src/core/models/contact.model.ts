@@ -193,3 +193,14 @@ export interface IContactInteractionModelProps{
     createdAt: string
     displayText: string
 }
+
+/*export enum ContactInteractionTypes{
+    CREATE,
+    UPDATE_TYPE,
+    WEBSITE_FORM,
+    EVENT_INVITE,
+    CREATE_NOTE,
+    CONTACT_EMAIL,
+    CONTACT_CALL,
+    CONTACT_WHATSAPP
+}*/
