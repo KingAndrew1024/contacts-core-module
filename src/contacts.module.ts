@@ -36,7 +36,7 @@ export function createAppSettingsService(settings: ContactsModuleOptionsInterfac
   ]
 })
 export class ContactsCoreModule {
-  static forRoot(config: ContactsModuleOptionsInterface): ModuleWithProviders {
+  static forRoot(config: ContactsModuleOptionsInterface): ModuleWithProviders<ContactsCoreModule> {
 
     return  {
       ngModule: ContactsCoreModule,

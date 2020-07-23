@@ -38,7 +38,7 @@ export class ContactsRepository implements IContactRepository {
             if (payload.hasOwnProperty(key))
                 params = params.append(key, payload[key]);
         }
-        
+
         const body = params.toString();
 
         return this.httpClient.post<IHttpBasicResponse<IContactApiProps>>(`${this.BASE_URL}/create`, body);
@@ -55,7 +55,7 @@ export class ContactsRepository implements IContactRepository {
             if (payload.hasOwnProperty(key))
                 params = params.append(key, payload[key]);
         }
-        
+
         const body = params.toString();
 
         return this.httpClient.post<IHttpBasicResponse<IContactApiProps>>(`${this.BASE_URL}/update/${payload.id}`, body);
@@ -67,9 +67,9 @@ export class ContactsRepository implements IContactRepository {
 
         let urlSearchParams = new URLSearchParams();
         Object.keys(data).forEach((key: string) => {
-            if(key != 'phone_code')
-                urlSearchParams.append(key, data[key]);
+            urlSearchParams.append(key, data[key]);
         });
+
         const body = urlSearchParams.toString()
 
         return this.httpClient.post<IHttpBasicResponse<IImportContactsResponse>>(
@@ -78,7 +78,7 @@ export class ContactsRepository implements IContactRepository {
         );
     }
 
-    createInteraction(contactId: number, config: IGenericInteractionProps){
+    createInteraction(contactId: number, config: IGenericInteractionProps) {
 
         let urlSearchParams = new URLSearchParams();
         Object.keys(config).forEach((key: string) => {

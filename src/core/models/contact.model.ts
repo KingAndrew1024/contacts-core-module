@@ -52,8 +52,9 @@ export class ContactModel implements IContactModelProps {
         };
     }
 
-    static toApiModel(contact: ContactModel): any {
-        return {
+    static toApiModel(contact: ContactModel, excludedFields: string[] = []): any {
+
+        let payload = {
             id: contact.id,
             name: contact.name,
             last_name: contact.lastName || "",
@@ -71,6 +72,13 @@ export class ContactModel implements IContactModelProps {
             //created_at: contact.createdAt,
             //updated_at: contact.updatedAt
         };
+
+        excludedFields.forEach(f => {
+            if(payload.hasOwnProperty(f))
+                delete payload[f]
+        })
+
+        return payload;
     }
 
     static fromDataResponse(data: IContactApiProps): ContactModel {
