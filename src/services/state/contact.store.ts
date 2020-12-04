@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-
-import * as fromSelector from '../../store/contact.selectors';
-import * as fromContacts from '../../store/contact.reducer';
-import * as fromActions from '../../store/contact.actions';
 import { CONTACT_TYPE, IContactForm, IGenericInteractionProps } from '../../core/contracts/IContact.repository';
 import { ContactModel } from '../../core/models/contact.model';
-
+import * as fromActions from '../../store/contact.actions';
+import * as fromContacts from '../../store/contact.reducer';
+import * as fromSelector from '../../store/contact.selectors';
 
 @Injectable()
 export class ContactStore {

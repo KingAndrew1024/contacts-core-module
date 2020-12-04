@@ -1,30 +1,28 @@
-import { createReducer, on, Action } from '@ngrx/store';
-
-import * as fromActions from './contact.actions';
-import { ContactModel, ContactInteractionModel } from '../core/models/contact.model';
+import { Action, createReducer, on } from '@ngrx/store';
 import { ICountryCodes } from '../core/contracts/IContact.repository';
 import { IContactsStateError, IContactsStateSuccess } from '../core/contracts/IStateErrorSuccess';
-
+import { ContactInteractionModel, ContactModel } from '../core/models/contact.model';
+import * as fromActions from './contact.actions';
 
 export interface ContactState {
-    isLoading: boolean
-    items: ContactModel[]
-    filteredItems: ContactModel[]
-    selectedId: number
+    isLoading: boolean;
+    items: ContactModel[];
+    filteredItems: ContactModel[];
+    selectedId: number;
     interactions: {
         isLoading: boolean
         items: Array<ContactInteractionModel>
         error: any
-    }
-    hasBeenFetched: boolean
+    };
+    hasBeenFetched: boolean;
 
     countryCodes: {
         items: Array<ICountryCodes>
         isLoading: boolean
         error: any
-    },
-    error: IContactsStateError
-    success: IContactsStateSuccess
+    };
+    error: IContactsStateError;
+    success: IContactsStateSuccess;
 }
 
 export const initialState: ContactState = {
@@ -45,11 +43,11 @@ export const initialState: ContactState = {
     hasBeenFetched: false,
     error: null,
     success: null
-}
+};
 
 const reducer = createReducer(
     initialState,
-    //On Begin Actions
+    // On Begin Actions
     on(
         fromActions.FetchContactBeginAction,
         fromActions.CreateContactBeginAction,
@@ -88,7 +86,7 @@ const reducer = createReducer(
         })
     ),
 
-    //ON Fail Actions
+    // ON Fail Actions
     on(
         fromActions.FetchContactFailAction,
         fromActions.CreateContactFailAction,
@@ -136,8 +134,8 @@ const reducer = createReducer(
         })
     ),
 
-    //ON Success Actions:
-    //FETCH
+    // ON Success Actions:
+    // FETCH
     on(fromActions.FetchContactSuccessAction, (state, action): ContactState => ({
         ...state,
         isLoading: false,
@@ -171,7 +169,7 @@ const reducer = createReducer(
         }
     })),
 
-    //INSERT Contacts:
+    // INSERT Contacts:
     on(fromActions.CreateContactSuccessAction, (state, action): ContactState => ({
         ...state,
         isLoading: false,
@@ -185,28 +183,29 @@ const reducer = createReducer(
         success: { after: getSuccessActionType(action.type) }
     })),
 
-    //REMOVES Contacts
+    // REMOVES Contacts
     on(fromActions.DeleteContactSuccessAction, (state, action): ContactState => ({
         ...state,
         isLoading: false,
         items: [
-            ...state.items.filter((c: ContactModel) => c.id != action.contactId)
+            ...state.items.filter((c: ContactModel) => c.id !== action.contactId)
         ],
         success: { after: getSuccessActionType(action.type) }
     })),
 
-    //UPDATES Contacts
+    // UPDATES Contacts
     on(fromActions.UpdateContactSuccessAction, (state, action): ContactState => ({
         ...state,
         isLoading: false,
         items: [
             ...((cl) => {
-                let tmp = [...cl];
+                const tmp = [...cl];
 
-                const idx = cl.findIndex((m) => m.id == action.contact.id);
+                const idx = cl.findIndex((m) => m.id === action.contact.id);
 
-                if (idx !== -1)
-                    tmp.splice(idx, 1, action.contact)
+                if (idx !== -1) {
+                    tmp.splice(idx, 1, action.contact);
+                }
 
                 return tmp;
             })(state.items),
@@ -214,7 +213,7 @@ const reducer = createReducer(
         success: { after: getSuccessActionType(action.type) }
     })),
 
-    //FILTER
+    // FILTER
     on(fromActions.FilterContactsSuccessAction, (state, action): ContactState => ({
         ...state,
         filteredItems: action.contactList,
@@ -223,32 +222,32 @@ const reducer = createReducer(
         success: null
     })),
 
-    //SELECT
+    // SELECT
     on(fromActions.SelectContactAction, (state, action): ContactState => ({
         ...state,
         selectedId: action.contactId,
         error: null,
         success: null
     })),
-)
+);
 
 function getErrorActionType(type: fromActions.ContactsActionTypes) {
 
-    let action: 'GET' | 'GET_INTERACTIONS' | 'CREATE' | 'UPDATE' | 'DELETE' | 'IMPORT' | 'UNKNOWN' = "UNKNOWN";
+    let action: 'GET' | 'GET_INTERACTIONS' | 'CREATE' | 'UPDATE' | 'DELETE' | 'IMPORT' | 'UNKNOWN' = 'UNKNOWN';
 
     switch (type) {
         case fromActions.ContactsActionTypes.FetchContactFail:
-            action = "GET"; break;
+            action = 'GET'; break;
         case fromActions.ContactsActionTypes.FetchInteractionsFail:
-            action = "GET_INTERACTIONS"; break;
+            action = 'GET_INTERACTIONS'; break;
         case fromActions.ContactsActionTypes.CreateContactFail:
-            action = "CREATE"; break;
+            action = 'CREATE'; break;
         case fromActions.ContactsActionTypes.UpdateContactFail:
-            action = "UPDATE"; break;
+            action = 'UPDATE'; break;
         case fromActions.ContactsActionTypes.DeleteContactFail:
-            action = "DELETE"; break;
+            action = 'DELETE'; break;
         case fromActions.ContactsActionTypes.ImportContactFail:
-            action = "IMPORT"; break;
+            action = 'IMPORT'; break;
     }
 
     return action;
@@ -256,19 +255,19 @@ function getErrorActionType(type: fromActions.ContactsActionTypes) {
 
 function getSuccessActionType(type: fromActions.ContactsActionTypes) {
 
-    let action: 'GET' | 'CREATE' | 'UPDATE' | 'DELETE' | 'IMPORT' | 'UNKNOWN' = "UNKNOWN";
+    let action: 'GET' | 'CREATE' | 'UPDATE' | 'DELETE' | 'IMPORT' | 'UNKNOWN' = 'UNKNOWN';
 
     switch (type) {
         case fromActions.ContactsActionTypes.FetchContactSuccess:
-            action = "GET"; break;
+            action = 'GET'; break;
         case fromActions.ContactsActionTypes.CreateContactSuccess:
-            action = "CREATE"; break;
+            action = 'CREATE'; break;
         case fromActions.ContactsActionTypes.UpdateContactSuccess:
-            action = "UPDATE"; break;
+            action = 'UPDATE'; break;
         case fromActions.ContactsActionTypes.DeleteContactSuccess:
-            action = "DELETE"; break;
+            action = 'DELETE'; break;
         case fromActions.ContactsActionTypes.ImportContactSuccess:
-            action = "IMPORT"; break;
+            action = 'IMPORT'; break;
     }
 
     return action;

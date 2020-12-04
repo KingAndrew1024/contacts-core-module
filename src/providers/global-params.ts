@@ -1,6 +1,4 @@
-import { ContactsModuleOptionsInterface } from "../contacts.module";
-
-
+import { ContactsModuleOptionsInterface } from '../contacts.module';
 
 export class AppSettingsService {
     constructor(settings: ContactsModuleOptionsInterface) {
@@ -13,6 +11,6 @@ export class AppSettingsService {
 
     setApiUrl(url: string) { this.apiUrl = url; }
     getApiUrl() { return this.apiUrl; }
-    setInstanceName(val: string) { this.instanceName = val };
-    getInstanceName() { return this.instanceName };
+    setInstanceName(val: string) { this.instanceName = val; }
+    getInstanceName() { return this.instanceName; }
 }

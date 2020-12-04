@@ -1,17 +1,13 @@
 import { Injectable } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { Actions, ofType, createEffect } from '@ngrx/effects';
-import { map, switchMap, catchError, withLatestFrom } from 'rxjs/operators';
 import { of } from 'rxjs';
-
+import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { ICountryCodes } from '../core/contracts/IContact.repository';
+import { ContactInteractionModel, ContactModel } from '../core/models/contact.model';
+import { ContactsService } from '../services/contacts.service';
 import * as fromActions from './contact.actions';
 import * as fromReducer from './contact.reducer';
-import { ContactsService } from '../services/contacts.service';
-import { ContactModel, ContactInteractionModel } from '../core/models/contact.model';
-import { ICountryCodes } from '../core/contracts/IContact.repository';
-
-
-
 
 @Injectable()
 export class ContactsEffects {
@@ -23,13 +19,13 @@ export class ContactsEffects {
                 return this.service.loadRemoteContacts().pipe(
                     map((contacList: ContactModel[]) => fromActions.FetchContactSuccessAction({ contacList })),
                     catchError(error => {
-                        console.error("Couldn't fetch contacts");
+                        console.error('Couldn\'t fetch contacts');
                         return of(fromActions.FetchContactFailAction({ errors: error }));
                     })
-                )
+                );
             }),
         )
-    )
+    );
 
     loadCountryCodes$ = createEffect(
         () => this.actions$.pipe(
@@ -38,13 +34,13 @@ export class ContactsEffects {
                 return this.service.loadCountryCodes().pipe(
                     map((codes: ICountryCodes[]) => fromActions.FetchCountryCodesSuccessAction({ codes })),
                     catchError(error => {
-                        console.error("Couldn't fetch contacts");
+                        console.error('Couldn\'t fetch contacts');
                         return of(fromActions.FetchCountryCodesFailAction({ errors: error }));
                     })
-                )
+                );
             }),
         )
-    )
+    );
 
     loadInteractions$ = createEffect(
         () => this.actions$.pipe(
@@ -53,13 +49,13 @@ export class ContactsEffects {
                 return this.service.loadContactInteractions(action.contactId).pipe(
                     map((interactions: ContactInteractionModel[]) => fromActions.FetchInteractionsSuccessAction({ interactions })),
                     catchError(error => {
-                        console.error("Couldn't fetch contact interactions");
+                        console.error('Couldn\'t fetch contact interactions');
                         return of(fromActions.FetchInteractionsFailAction({ errors: error }));
                     })
-                )
+                );
             }),
         )
-    )
+    );
 
     create$ = createEffect(
         () => this.actions$.pipe(
@@ -68,13 +64,13 @@ export class ContactsEffects {
                 return this.service.createContact(action.contactForm).pipe(
                     map((contact: ContactModel) => fromActions.CreateContactSuccessAction({ contact })),
                     catchError(errors => {
-                        console.error("Couldn't Create contact");
+                        console.error('Couldn\'t Create contact');
                         return of(fromActions.CreateContactFailAction({ errors }));
                     })
-                )
+                );
             })
         )
-    )
+    );
 
     delete$ = createEffect(
         () => this.actions$.pipe(
@@ -82,13 +78,13 @@ export class ContactsEffects {
             switchMap((action: any) => this.service.deleteContact(action.contactId).pipe(
                 map(contactId => fromActions.DeleteContactSuccessAction({ contactId })),
                 catchError(errors => {
-                    console.error("Couldn't Delete contact");
+                    console.error('Couldn\'t Delete contact');
                     return of(fromActions.DeleteContactFailAction({ errors }));
                 })
             )
             )
         )
-    )
+    );
 
     update$ = createEffect(
         () => this.actions$.pipe(
@@ -96,12 +92,12 @@ export class ContactsEffects {
             switchMap((action: any) => this.service.updateContact(action.contactForm).pipe(
                 map((updatedContact) => fromActions.UpdateContactSuccessAction({ contact: updatedContact })),
                 catchError(errors => {
-                    console.error("Couldn't Update contact");
+                    console.error('Couldn\'t Update contact');
                     return of(fromActions.UpdateContactFailAction({ errors }));
                 })
             ))
         )
-    )
+    );
 
 
     import$ = createEffect(
@@ -110,33 +106,33 @@ export class ContactsEffects {
             switchMap((action: any) => {
                 return this.service.importContacts(action.contactList).pipe(
                     map(contactList => {
-                        return fromActions.ImportContactSuccessAction({ contactList })
+                        return fromActions.ImportContactSuccessAction({ contactList });
                     }),
                     catchError(errors => {
-                        return of(fromActions.ImportContactFailAction({ errors }))
+                        return of(fromActions.ImportContactFailAction({ errors }));
                     })
-                )
+                );
             })
         )
-    )
+    );
 
     filter$ = createEffect(
         () => this.actions$.pipe(
             ofType(fromActions.ContactsActionTypes.FilterContactsBegin),
             withLatestFrom(this.store$),
             switchMap(([action, store]) => {
-                let contactList = (<any>action).clientType == "ALL" ? store.contacts.items :
-                    store.contacts.items.filter(item => item.type == (<any>action).clientType);
+                const contactList = (action as any).clientType === 'ALL' ? store.contacts.items :
+                    store.contacts.items.filter(item => item.type === (action as any).clientType);
                 return of(
                     fromActions.FilterContactsSuccessAction({ contactList })
                 );
             }),
             catchError(e => {
-                console.error("Filter contacts Error", e);
-                throw e
+                console.error('Filter contacts Error', e);
+                throw e;
             })
         )
-    )
+    );
 
     createInteraction$ = createEffect(
         () => this.actions$.pipe(
@@ -144,15 +140,15 @@ export class ContactsEffects {
             switchMap((action: any) => {
                 return this.service.createInteraction(action.contactId, action.config).pipe(
                     map(interaction => {
-                        return fromActions.CreateInteractionSuccessAction({ interaction })
+                        return fromActions.CreateInteractionSuccessAction({ interaction });
                     }),
                     catchError(errors => {
-                        return of(fromActions.CreateInteractionFailAction({ errors }))
+                        return of(fromActions.CreateInteractionFailAction({ errors }));
                     })
-                )
+                );
             })
         )
-    )
+    );
 
     constructor(
         private actions$: Actions,
@@ -161,6 +157,6 @@ export class ContactsEffects {
     ) { }
 }
 
-interface AppState{
-    contacts: fromReducer.ContactState,
+interface AppState {
+    contacts: fromReducer.ContactState;
 }

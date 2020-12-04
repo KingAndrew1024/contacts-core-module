@@ -1,4 +1,4 @@
-import { IContactForm, CONTACT_TYPE, IContactApiProps, CONTACT_ORIGIN, INTERACTION_TYPE, IContactInteractionsApiProps } from '../contracts/IContact.repository';
+import { CONTACT_ORIGIN, CONTACT_TYPE, IContactApiProps, IContactForm, IContactInteractionsApiProps, INTERACTION_TYPE } from '../contracts/IContact.repository';
 
 export class ContactModel implements IContactModelProps {
     id: number;
@@ -8,29 +8,29 @@ export class ContactModel implements IContactModelProps {
     origin?: CONTACT_ORIGIN;
     email?: string;
     phone?: string;
-    countryCode?: string
-    phoneCode?: string
+    countryCode?: string;
+    phoneCode?: string;
     streetAddress?: string;
     city?: string;
     stateIso?: string;
-    createdAt?: string
-    updatedAt?: string
+    createdAt?: string;
+    updatedAt?: string;
 
     constructor(data: IContactModelProps) {
         this.id = data.id;
         this.name = data.name;
-        this.lastName = data.lastName || "";
-        this.type = data.type || "NOT_SPECIFIED";
-        this.origin = data.origin || "UNKNOWN";
-        this.email = data.email || "";
-        this.phone = (data.phone || "").replace(/[^0-9]+/g, "").slice(-10);
+        this.lastName = data.lastName || '';
+        this.type = data.type || 'NOT_SPECIFIED';
+        this.origin = data.origin || 'UNKNOWN';
+        this.email = data.email || '';
+        this.phone = (data.phone || '').replace(/[^0-9]+/g, '').slice(-10);
         this.countryCode = data.countryCode || 'MEX';
         this.phoneCode = data.phoneCode || '+52';
-        this.streetAddress = data.streetAddress || "";
-        this.city = data.city || "";
-        this.stateIso = data.stateIso || "";
-        this.createdAt = data.createdAt || ""
-        this.updatedAt = data.updatedAt || ""
+        this.streetAddress = data.streetAddress || '';
+        this.city = data.city || '';
+        this.stateIso = data.stateIso || '';
+        this.createdAt = data.createdAt || '';
+        this.updatedAt = data.updatedAt || '';
     }
 
     static toStorage(contact: ContactModel): IContactModelProps {
@@ -54,29 +54,30 @@ export class ContactModel implements IContactModelProps {
 
     static toApiModel(contact: ContactModel, excludedFields: string[] = []): any {
 
-        let payload = {
+        const payload = {
             id: contact.id,
             name: contact.name,
-            last_name: contact.lastName || "",
-            type: contact.type || "NOT_SPECIFIED",
-            email: contact.email || "",
-            phone: contact.phone || "",
+            last_name: contact.lastName || '',
+            type: contact.type || 'NOT_SPECIFIED',
+            email: contact.email || '',
+            phone: contact.phone || '',
             country_code: contact.countryCode,
             phone_code: contact.phoneCode,
-            street_address: contact.streetAddress || "",
-            city: contact.city || "",
-            state_iso: contact.stateIso || "",
+            street_address: contact.streetAddress || '',
+            city: contact.city || '',
+            state_iso: contact.stateIso || '',
 
-            //Maybe unused
-            //origin: contact.origin,
-            //created_at: contact.createdAt,
-            //updated_at: contact.updatedAt
+            // Maybe unused
+            // origin: contact.origin,
+            // created_at: contact.createdAt,
+            // updated_at: contact.updatedAt
         };
 
         excludedFields.forEach(f => {
-            if(payload.hasOwnProperty(f))
-                delete payload[f]
-        })
+            if (payload.hasOwnProperty(f)) {
+                delete payload[f];
+            }
+        });
 
         return payload;
     }
@@ -102,7 +103,7 @@ export class ContactModel implements IContactModelProps {
 
     static fromContactForm(form: IContactForm) {
         return new ContactModel({
-            //Required
+            // Required
             id: +form.id,
             name: form.name,
             countryCode: form.country_code,
@@ -124,31 +125,31 @@ export class ContactModel implements IContactModelProps {
             name: '',
             countryCode: null,
             phoneCode: null
-        })
+        });
     }
 }
 
 export interface IContactModelProps {
-    //Required
-    id: number
-    name: string
-    countryCode?: string
-    phoneCode?: string
+    // Required
+    id: number;
+    name: string;
+    countryCode?: string;
+    phoneCode?: string;
 
-    //Main optionals
-    lastName?: string
-    type?: CONTACT_TYPE
-    origin?: CONTACT_ORIGIN
-    email?: string
-    phone?: string
-    streetAddress?: string
-    city?: string
-    stateIso?: string
-    createdAt?: string
-    updatedAt?: string
+    // Main optionals
+    lastName?: string;
+    type?: CONTACT_TYPE;
+    origin?: CONTACT_ORIGIN;
+    email?: string;
+    phone?: string;
+    streetAddress?: string;
+    city?: string;
+    stateIso?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
-export class ContactInteractionModel implements IContactInteractionModelProps{
+export class ContactInteractionModel implements IContactInteractionModelProps {
     id: number;
     contactId: number;
     entity: string;
@@ -157,14 +158,14 @@ export class ContactInteractionModel implements IContactInteractionModelProps{
     createdAt: string;
     displayText: string;
 
-    constructor(data: IContactInteractionModelProps){
-        this.id = data.id
-        this.contactId = data.contactId
-        this.entity = data.entity
-        this.entityId = data.entityId
-        this.actionType = data.actionType
-        this.createdAt = data.createdAt
-        this.displayText = data.displayText || ""
+    constructor(data: IContactInteractionModelProps) {
+        this.id = data.id;
+        this.contactId = data.contactId;
+        this.entity = data.entity;
+        this.entityId = data.entityId;
+        this.actionType = data.actionType;
+        this.createdAt = data.createdAt;
+        this.displayText = data.displayText || '';
     }
 
     static fromDataResponse(data: IContactInteractionsApiProps): ContactInteractionModel {
@@ -183,23 +184,23 @@ export class ContactInteractionModel implements IContactInteractionModelProps{
         return new ContactInteractionModel({
             id: null,
             contactId: null,
-            entity: "",
+            entity: '',
             entityId: null,
             actionType: null,
             createdAt: null,
             displayText: null
-        })
+        });
     }
 }
 
-export interface IContactInteractionModelProps{
-    id: number
-    contactId: number
-    entity: string
-    entityId: number
-    actionType: INTERACTION_TYPE
-    createdAt: string
-    displayText: string
+export interface IContactInteractionModelProps {
+    id: number;
+    contactId: number;
+    entity: string;
+    entityId: number;
+    actionType: INTERACTION_TYPE;
+    createdAt: string;
+    displayText: string;
 }
 
 /*export enum ContactInteractionTypes{
