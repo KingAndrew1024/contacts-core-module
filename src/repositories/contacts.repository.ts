@@ -33,7 +33,7 @@ export class ContactsRepository implements IContactRepository {
         );
     }
 
-    getContactInteractions(contactId: number) {
+    getContactInteractions(contactId: number): Observable<IHttpBasicResponse<Array<IContactInteractionsApiProps>>> {
         return this.httpClient.get<IHttpBasicResponse<Array<IContactInteractionsApiProps>>>(`${this.BASE_URL}/interactions/${contactId}`);
     }
 
@@ -86,7 +86,7 @@ export class ContactsRepository implements IContactRepository {
         );
     }
 
-    createInteraction(contactId: number, config: IGenericInteractionProps) {
+    createInteraction(contactId: number, config: IGenericInteractionProps): Observable<IHttpBasicResponse<IContactInteractionsApiProps>> {
 
         const urlSearchParams = new URLSearchParams();
         Object.keys(config).forEach((key: string) => {

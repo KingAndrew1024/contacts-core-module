@@ -33,29 +33,10 @@ export class ContactModel implements IContactModelProps {
         this.updatedAt = data.updatedAt || '';
     }
 
-    static toStorage(contact: ContactModel): IContactModelProps {
-        return {
-            id: contact.id,
-            name: contact.name,
-            lastName: contact.lastName,
-            type: contact.type,
-            origin: contact.origin,
-            email: contact.email,
-            phone: contact.phone,
-            countryCode: contact.countryCode,
-            phoneCode: contact.phoneCode,
-            streetAddress: contact.streetAddress,
-            city: contact.city,
-            stateIso: contact.stateIso,
-            createdAt: contact.createdAt,
-            updatedAt: contact.updatedAt
-        };
-    }
+    static toApiModel(contact: ContactModel, excludedFields: string[] = []): IContactApiProps {
 
-    static toApiModel(contact: ContactModel, excludedFields: string[] = []): any {
-
-        const payload = {
-            id: contact.id,
+        const payload: IContactApiProps = {
+            id: contact.id.toString(),
             name: contact.name,
             last_name: contact.lastName || '',
             type: contact.type || 'NOT_SPECIFIED',
@@ -68,9 +49,11 @@ export class ContactModel implements IContactModelProps {
             state_iso: contact.stateIso || '',
 
             // Maybe unused
-            // origin: contact.origin,
-            // created_at: contact.createdAt,
-            // updated_at: contact.updatedAt
+            client_id: null,
+            full_name: null,
+            origin: contact.origin,
+            created_at: contact.createdAt,
+            updated_at: contact.updatedAt
         };
 
         excludedFields.forEach(f => {
@@ -101,7 +84,7 @@ export class ContactModel implements IContactModelProps {
         });
     }
 
-    static fromContactForm(form: IContactForm) {
+    static fromContactForm(form: IContactForm): ContactModel {
         return new ContactModel({
             // Required
             id: +form.id,

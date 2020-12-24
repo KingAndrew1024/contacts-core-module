@@ -8,7 +8,7 @@ import * as fromSelector from '../../store/contact.selectors';
 
 @Injectable()
 export class ContactStore {
-    constructor(private store: Store<fromContacts.ContactState>) { }
+    constructor(public store: Store<fromContacts.ContactState>) { }
 
     get Contacts$() {
         return this.store.select(fromSelector.getContactItems);

@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
+import { Contact } from '@ionic-native/contacts';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { ICountryCodes } from '../core/contracts/IContact.repository';
+import { IContactsService } from '../core/contracts/IContact.service';
 import { ContactInteractionModel, ContactModel } from '../core/models/contact.model';
-import { ContactsService } from '../services/contacts.service';
+import { ContactStore, CONTACTS_SERVICE } from '../services';
 import * as fromActions from './contact.actions';
 import * as fromReducer from './contact.reducer';
 
@@ -34,7 +35,7 @@ export class ContactsEffects {
                 return this.service.loadCountryCodes().pipe(
                     map((codes: ICountryCodes[]) => fromActions.FetchCountryCodesSuccessAction({ codes })),
                     catchError(error => {
-                        console.error('Couldn\'t fetch contacts');
+                        console.error('Couldn\'t fetch country codes', error);
                         return of(fromActions.FetchCountryCodesFailAction({ errors: error }));
                     })
                 );
@@ -119,17 +120,16 @@ export class ContactsEffects {
     filter$ = createEffect(
         () => this.actions$.pipe(
             ofType(fromActions.ContactsActionTypes.FilterContactsBegin),
-            withLatestFrom(this.store$),
-            switchMap(([action, store]) => {
-                const contactList = (action as any).clientType === 'ALL' ? store.contacts.items :
-                    store.contacts.items.filter(item => item.type === (action as any).clientType);
-                return of(
-                    fromActions.FilterContactsSuccessAction({ contactList })
-                );
+            withLatestFrom(this.store.Contacts$),
+            switchMap(([action, storedContacts]) => {
+                const contactList = (action as any).clientType === 'ALL' ? storedContacts :
+                        storedContacts.filter(item => item.type === (action as any).clientType);
+
+                return of(fromActions.FilterContactsSuccessAction({ contactList }));
             }),
-            catchError(e => {
-                console.error('Filter contacts Error', e);
-                throw e;
+            catchError(errors => {
+                console.error('**** Filter contacts Error');
+                return of(fromActions.FilterContactsFailAction({ errors }));
             })
         )
     );
@@ -152,11 +152,11 @@ export class ContactsEffects {
 
     constructor(
         private actions$: Actions,
-        private store$: Store<AppState>,
-        private service: ContactsService
+        private store: ContactStore,
+        @Inject(CONTACTS_SERVICE) private service: IContactsService<Contact, ContactModel>
     ) { }
 }
 
-interface AppState {
+export interface AppState {
     contacts: fromReducer.ContactState;
 }

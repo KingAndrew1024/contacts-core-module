@@ -1,18 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { Contact, ContactFieldType, ContactFindOptions, Contacts } from '@ionic-native/contacts';
 import { Observable, Subscriber } from 'rxjs';
 import { catchError, map, withLatestFrom } from 'rxjs/operators';
-import { IContactForm, ICountryCodes, IGenericInteractionProps, IImportContactsForm } from '../core/contracts/IContact.repository';
+import { IContactForm, IContactRepository, ICountryCodes, IGenericInteractionProps, IImportContactsForm } from '../core/contracts/IContact.repository';
 import { IContactsService } from '../core/contracts/IContact.service';
 import { ContactInteractionModel, ContactModel } from '../core/models/contact.model';
-import { ContactsRepository, COUNTRY_CALLING_CODES } from '../repositories/contacts.repository';
+import { COUNTRY_CALLING_CODES } from '../repositories/contacts.repository';
+import { CONTACTS_REPOSITORY } from './identifiers';
 import { ContactStore } from './state/contact.store';
 
 @Injectable()
 export class ContactsService implements IContactsService<Contact, ContactModel> {
 
     constructor(
-        private repository: ContactsRepository,
+        @Inject(CONTACTS_REPOSITORY) private repository: IContactRepository,
         private nativeContacts: Contacts,
         private store: ContactStore) {
     }
@@ -31,13 +32,10 @@ export class ContactsService implements IContactsService<Contact, ContactModel> 
                 }, (error: Error) => {
                     console.error('*** Device contacts error:', error);
                     subscriber.error(error);
-                }).catch(e => {
-                    console.error('*** CATCH:: Device contacts error:', e);
-                    subscriber.error(e);
                 });
             }
             catch (e) {
-                console.error('*** TRY/CATCH:: Device contacts error:', e);
+                console.error('*** TRY/CATCH:: loadRawNativeContacts: Device contacts error:', e.message);
                 subscriber.error('The Contacts Plugin is not installed');
             }
         });
@@ -62,15 +60,12 @@ export class ContactsService implements IContactsService<Contact, ContactModel> 
 
                     subscriber.next(res.length > 0 ? res[0] : null);
                 }, (error: Error) => {
-                    console.error('*** findNativeContact Device contacts error:', error);
+                    console.error('*** pickOne Device: contacts error:', error);
                     subscriber.error(error);
-                }).catch(e => {
-                    console.error('*** CATCH:: findNativeContact Device contacts error:', e);
-                    subscriber.error(e);
                 });
             }
             catch (e) {
-                console.error('*** TRY/CATCH:: findNativeContact Device contacts error:', e);
+                console.error('*** TRY/CATCH:: pickOne: Device contacts error:', e.message);
                 subscriber.error('The Contacts Plugin is not installed');
             }
         });
@@ -106,10 +101,9 @@ export class ContactsService implements IContactsService<Contact, ContactModel> 
         return observer;
     }
 
-    loadRemoteContacts(): Observable<any> {
+    loadRemoteContacts(): Observable<ContactModel[]> {
         return this.repository.getContacts().pipe(
             map((response) => {
-
                 return response.data.map(contact => {
                     const contactModel = ContactModel.fromDataResponse(contact);
                     return contactModel;
@@ -132,7 +126,7 @@ export class ContactsService implements IContactsService<Contact, ContactModel> 
         );
     }
 
-    loadContactInteractions(contactId: number) {
+    loadContactInteractions(contactId: number): Observable<ContactInteractionModel[]> {
         return this.repository.getContactInteractions(contactId).pipe(
             map((response) => {
                 return response.data.map(interaction => {
@@ -177,7 +171,6 @@ export class ContactsService implements IContactsService<Contact, ContactModel> 
     updateContact(form: IContactForm): Observable<ContactModel> {
         return this.repository.updateContact(form).pipe(
             map((response) => {
-
                 return ContactModel.fromDataResponse(response.data);
             }),
             catchError(error => {
@@ -197,7 +190,7 @@ export class ContactsService implements IContactsService<Contact, ContactModel> 
         );
     }
 
-    createInteraction(contactId: number, config: IGenericInteractionProps) {
+    createInteraction(contactId: number, config: IGenericInteractionProps): Observable<ContactInteractionModel> {
         return this.repository.createInteraction(contactId, config).pipe(
             map((response) => {
                 return ContactInteractionModel.fromDataResponse(response.data);

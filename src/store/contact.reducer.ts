@@ -11,7 +11,7 @@ export interface ContactState {
     selectedId: number;
     interactions: {
         isLoading: boolean
-        items: Array<ContactInteractionModel>
+        items: ContactInteractionModel[]
         error: any
     };
     hasBeenFetched: boolean;
@@ -72,7 +72,6 @@ const reducer = createReducer(
             }
         })
     ),
-
     on(
         fromActions.FetchInteractionsBeginAction,
         (state): ContactState => ({
@@ -141,6 +140,7 @@ const reducer = createReducer(
         isLoading: false,
         items: action.contacList,
         hasBeenFetched: true,
+        success: { after: getSuccessActionType(action.type) }
     })),
 
     on(fromActions.FetchCountryCodesSuccessAction, (state, action): ContactState => ({
@@ -237,10 +237,12 @@ function getErrorActionType(type: fromActions.ContactsActionTypes) {
 
     switch (type) {
         case fromActions.ContactsActionTypes.FetchContactFail:
+        case fromActions.ContactsActionTypes.FetchCountryCodesFail:
             action = 'GET'; break;
         case fromActions.ContactsActionTypes.FetchInteractionsFail:
             action = 'GET_INTERACTIONS'; break;
         case fromActions.ContactsActionTypes.CreateContactFail:
+        case fromActions.ContactsActionTypes.CreateInteractionFail:
             action = 'CREATE'; break;
         case fromActions.ContactsActionTypes.UpdateContactFail:
             action = 'UPDATE'; break;

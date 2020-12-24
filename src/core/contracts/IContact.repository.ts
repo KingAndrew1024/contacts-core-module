@@ -13,7 +13,7 @@ export interface IContactRepository {
 }
 export type CONTACT_TYPE = 'ALL' | 'NOT_SPECIFIED' | 'PROSPECT' | 'CLIENT';
 export type CONTACT_ORIGIN = 'MANUAL' | 'MOBILE_APP' | 'WEB' | 'WEB_APP' | 'UNKNOWN';
-export type INTERACTION_TYPE = 'CREATE' | 'UPDATE_TYPE';
+export type INTERACTION_TYPE = 'CREATE' | 'UPDATE_TYPE' | 'CONTACT_CALL' | 'CONTACT_SCHEDULED' | 'CONTACT_EMAIL';
 
 export interface IImportContactsResponse {
     contacts_exported: Array<IContactApiProps>;
@@ -24,13 +24,13 @@ export interface IContactForm {
     name: string;
     last_name: string;
     type: CONTACT_TYPE;
+    country_code: string;
+    phone_code: string;
 
     // Optionals
     id?: number;
     contact_id?: number;
     phone?: string;
-    country_code: string;
-    phone_code: string;
     email?: string;
     street_address?: string;
     city?: string;
@@ -76,6 +76,7 @@ export interface IContactApiProps {
     city: string;
     created_at: string;
     updated_at: string;
+    full_name: string;
 }
 
 export interface IContactInteractionsApiProps {

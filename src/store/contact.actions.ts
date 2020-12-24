@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { CONTACT_TYPE, IContactForm, ICountryCodes, IGenericInteractionProps } from '../core/contracts/IContact.repository';
-import { ContactModel } from '../core/models/contact.model';
+import { ContactInteractionModel, ContactModel } from '../core/models/contact.model';
 
 export enum ContactsActionTypes {
     FetchContactBegin = '[Contacs] Fetch contact begin',
@@ -29,6 +29,7 @@ export enum ContactsActionTypes {
 
     FilterContactsBegin = '[Contacs] Filter contact begin',
     FilterContactsSuccess = '[Contacs] Filter contact success',
+    FilterContactsFail = '[Contacs] Filter contact failure',
 
     SelectContact = '[Contacs] Select contact',
 
@@ -63,7 +64,7 @@ export const FetchInteractionsBeginAction = createAction(
 
 export const FetchInteractionsSuccessAction = createAction(
     ContactsActionTypes.FetchInteractionsSuccess,
-    props<{ interactions: Array<any> }>()
+    props<{ interactions: ContactInteractionModel[] }>()
 );
 
 export const FetchInteractionsFailAction = createAction(
@@ -146,6 +147,11 @@ export const FilterContactsSuccessAction = createAction(
     props<{ contactList: ContactModel[] }>()
 );
 
+export const FilterContactsFailAction = createAction(
+    ContactsActionTypes.FilterContactsFail,
+    props<{ errors: any }>()
+);
+
 export const SelectContactAction = createAction(
     ContactsActionTypes.SelectContact,
     props<{ contactId: number }>()
@@ -172,7 +178,7 @@ export const CreateInteractionBeginAction = createAction(
 
 export const CreateInteractionSuccessAction = createAction(
     ContactsActionTypes.CreateInteractionSuccess,
-    props<{ interaction: any }>()
+    props<{ interaction: ContactInteractionModel }>()
 );
 
 export const CreateInteractionFailAction = createAction(
