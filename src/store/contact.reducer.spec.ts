@@ -235,19 +235,30 @@ describe('ContactReducer', () => {
             expect(state).toEqual(expectedState);
         });
 
-        it('DeleteContactSuccessAction', () => {
+        fit('DeleteContactSuccessAction', () => {
 
-            const contactId = 123;
+            const item1: ContactModel = {
+                id: 123,
+                name: 'item 1',
+                countryCode: 'MEX',
+                phoneCode: '+52'
+            };
+            const item2: ContactModel = {
+                id: 987,
+                name: 'item 2',
+                countryCode: 'MEX',
+                phoneCode: '+52'
+            };
+
+            initialState.items = [item1, item2];
 
             const expectedState: fromReducer.ContactState = {
                 ...initialState,
-                items: [
-                    ...initialState.items.filter((c: ContactModel) => c.id !== contactId)
-                ],
+                items: [item1],
                 success: { after: 'DELETE' }
             };
 
-            const action = fromActions.DeleteContactSuccessAction({ contactId });
+            const action = fromActions.DeleteContactSuccessAction({ contactId: item2.id });
 
             const state = fromReducer.contactsReducer(initialState, action);
 
@@ -256,30 +267,34 @@ describe('ContactReducer', () => {
 
         it('UpdateContactSuccessAction', () => {
 
-            const item: ContactModel = {
+            const item1: ContactModel = {
                 id: 123,
-                name: 'some updated name',
+                name: 'item 1',
+                countryCode: 'MEX',
+                phoneCode: '+52'
+            };
+            const item2: ContactModel = {
+                id: 987,
+                name: 'item 2',
+                countryCode: 'MEX',
+                phoneCode: '+52'
+            };
+            const updatedItem: ContactModel = {
+                id: 987,
+                name: 'item 2 updated',
                 countryCode: 'MEX',
                 phoneCode: '+52'
             };
 
-            initialState.items = [
-                item, // <-- after action, state should include the updated contact
-                {
-                    id: 987,
-                    name: 'fake name',
-                    countryCode: 'MEX',
-                    phoneCode: '+52'
-                }
-            ];
+            initialState.items = [item1, item2];
 
             const expectedState: fromReducer.ContactState = {
                 ...initialState,
-                items: [...initialState.items],
+                items: [item1, updatedItem],
                 success: { after: 'UPDATE' }
             };
 
-            const action = fromActions.UpdateContactSuccessAction({ contact: item });
+            const action = fromActions.UpdateContactSuccessAction({ contact: updatedItem });
 
             const state = fromReducer.contactsReducer(initialState, action);
 

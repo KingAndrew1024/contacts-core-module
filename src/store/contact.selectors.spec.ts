@@ -21,7 +21,7 @@ describe('Contact Selectors', () => {
     const state = fromReducer.initialState;
 
     it('getContactPageState should retrieve state', () => {
-        expect(getContactPageState({contacts: state})).toBe(state);
+        expect(getContactPageState({ contacts: state })).toBe(state);
     });
 
     it('stateGetIsLoading should retrieve state.isLoading value', () => {
@@ -49,39 +49,39 @@ describe('Contact Selectors', () => {
     });
 
     it('getIsLoading should retrieve state.isLoading value', () => {
-        expect(getIsLoading({contacts: state})).toBe(state.isLoading);
+        expect(getIsLoading({ contacts: state })).toBe(state.isLoading);
     });
 
     it('getError should retrieve state.error value', () => {
-        expect(getError({contacts: state})).toBe(state.error);
+        expect(getError({ contacts: state })).toBe(state.error);
     });
 
     it('getSuccess should retrieve state.success value', () => {
-        expect(getSuccess({contacts: state})).toBe(state.success);
+        expect(getSuccess({ contacts: state })).toBe(state.success);
     });
 
     it('getContactInteractionError should retrieve state.interactions.error value', () => {
-        expect(getContactInteractionError({contacts: state})).toBe(state.interactions.error);
+        expect(getContactInteractionError({ contacts: state })).toBe(state.interactions.error);
     });
 
     it('getIsLoadingCountryCodes should retrieve state.countryCodes.isLoading value', () => {
-        expect(getIsLoadingCountryCodes({contacts: state})).toBe(state.countryCodes.isLoading);
+        expect(getIsLoadingCountryCodes({ contacts: state })).toBe(state.countryCodes.isLoading);
     });
 
     it('getCountryCodes should retrieve state.countryCodes.items value', () => {
-        expect(getCountryCodes({contacts: state})).toBe(state.countryCodes.items);
+        expect(getCountryCodes({ contacts: state })).toBe(state.countryCodes.items);
     });
 
     it('getCountryCodesErrors should retrieve state.countryCodes.error value', () => {
-        expect(getCountryCodesErrors({contacts: state})).toBe(state.countryCodes.error);
+        expect(getCountryCodesErrors({ contacts: state })).toBe(state.countryCodes.error);
     });
 
     it('getContactById should retrieve a contact value', () => {
-        expect(getContactById({contacts: state})).toBe(state.items.filter(c => +c.id === state.selectedId)[0]);
+        expect(getContactById({ contacts: state })).toBe(state.items.filter(c => +c.id === state.selectedId)[0]);
     });
 
     it('getContactById should retrieve an empty contact value', () => {
-        const state2 = {contacts: {...state, selectedId: 123}};
+        const state2 = { contacts: { ...state, selectedId: 123 } };
         expect(getContactById(state2)).not.toBeDefined();
     });
 });

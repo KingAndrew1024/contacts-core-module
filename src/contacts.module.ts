@@ -6,7 +6,7 @@ import { StoreModule } from '@ngrx/store';
 import { AppSettingsService } from './providers/global-params';
 import { ContactsRepository } from './repositories/contacts.repository';
 import { ContactsService } from './services/contacts.service';
-import { CONTACTS_SERVICE } from './services/identifiers';
+import { CONTACTS_REPOSITORY, CONTACTS_SERVICE } from './services/identifiers';
 import { ContactStore } from './services/state/contact.store';
 import { ContactsEffects, contactsReducer } from './store';
 
@@ -47,7 +47,7 @@ export class ContactsCoreModule {
                     deps: [AppSettingsObject]
                 },
                 { provide: CONTACTS_SERVICE, useClass: ContactsService },
-                ContactsRepository,
+                { provide: CONTACTS_REPOSITORY, useClass: ContactsRepository },
                 Contacts,
                 ContactStore
             ]

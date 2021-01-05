@@ -12,8 +12,8 @@ describe('ContactStore', () => {
 
     // let storeSpy: any;
     let store: any;
-        // MockStore<AppState>;
-        // Store<AppState>;
+    // MockStore<AppState>;
+    // Store<AppState>;
     let contactStore: ContactStore;
 
     const initialState = {
@@ -33,7 +33,7 @@ describe('ContactStore', () => {
                 // provideMockStore({ initialState }),
                 {
                     provide: Store,
-                    useValue: {pipe: () => of(true), select: () => of(true), dispatch: (val) => {}}// StoreMock,
+                    useValue: { select: () => of(true), dispatch: (val) => { } }// StoreMock,
                 },
                 ContactStore,
             ]
@@ -186,7 +186,7 @@ describe('ContactStore', () => {
         contactStore.fetchInteractions$(contactId);
         expect(contactStore.store.dispatch).toHaveBeenCalledTimes(1);
         expect(contactStore.store.dispatch as any).toHaveBeenCalledWith(
-            fromActions.FetchInteractionsBeginAction({ contactId})
+            fromActions.FetchInteractionsBeginAction({ contactId })
         );
         done();
     });
