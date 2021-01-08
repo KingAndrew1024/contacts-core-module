@@ -14,10 +14,7 @@ import { IHttpBasicResponse } from '../core/contracts/IHttpBasicResponse';
 import { TEST_CONTACT_API_LIST, TEST_CONTACT_INTERACTION_API_LIST } from './contacts.data';
 
 @Injectable()
-export class ContactsRepositoryMock implements IContactRepository {
-
-    constructor() { }
-
+export class MockContactsRepository implements IContactRepository {
 
     readonly responseError: IHttpBasicResponse<null> = {
         status: 'error',

@@ -7,14 +7,15 @@ import {
     IContactRepository,
     IContactsService,
     IGenericInteractionProps,
-    IImportContactsForm
+    IImportContactsForm,
 } from '../core';
-import { ContactsRepositoryMock } from '../mocks/contacts.respository.mock';
+import { MockContactsRepository } from '../mocks/contacts.respository.mock';
 import { ContactsService } from './contacts.service';
 import { Contacts } from '@ionic-native/contacts';
 import { ContactStore } from './state/contact.store';
 import { of, throwError } from 'rxjs';
-import { CONTACTS_REPOSITORY } from './identifiers';
+import { CONTACTS_REPOSITORY, CONTACTS_SERVICE } from './identifiers';
+import { COUNTRY_CALLING_CODES } from '../repositories/contacts.repository';
 
 
 class MockContactsStore {
@@ -25,8 +26,8 @@ class MockContactsStore {
 
 describe('ContactsService', () => {
     let contactsService: IContactsService<Contact, ContactModel>;
-    let contactsRepositoryMock: IContactRepository;
-    let contactsStoreSpy: any;
+    let mockMontactsRepository: IContactRepository;
+    let mockContactsStore: any;
     let nativeContactsSpy: any;
 
 
@@ -36,15 +37,15 @@ describe('ContactsService', () => {
         TestBed.configureTestingModule({
             providers: [
                 { provide: Contacts, useValue: nativeContactsSpy },
-                { provide: CONTACTS_REPOSITORY, useClass: ContactsRepositoryMock },
+                { provide: CONTACTS_REPOSITORY, useClass: MockContactsRepository },
+                { provide: CONTACTS_SERVICE, useClass: ContactsService },
                 { provide: ContactStore, useClass: MockContactsStore },
-                ContactsService,
             ]
         });
 
-        contactsService = TestBed.inject(ContactsService);
-        contactsRepositoryMock = TestBed.inject(CONTACTS_REPOSITORY);
-        contactsStoreSpy = TestBed.inject(ContactStore);
+        contactsService = TestBed.inject(CONTACTS_SERVICE);
+        mockMontactsRepository = TestBed.inject(CONTACTS_REPOSITORY);
+        mockContactsStore = TestBed.inject(ContactStore);
     });
 
     const httpError = {
@@ -60,21 +61,31 @@ describe('ContactsService', () => {
     };
 
     const nativeContact = {
-        phoneNumbers: [{ value: '1234567890' }]
+        name: { givenName: 'some fake name' },
+        phoneNumbers: [{ value: '1234567890' }],
+        emails: [{ value: 'fake@email.com' }]
     };
 
-    it('Should get a non-empty list of Native Contacts', (done: DoneFn) => {
+    it('Should be created', () => {
+        expect(contactsService).toBeTruthy();
+    });
 
-        nativeContactsSpy.find.and.returnValue(Promise.resolve([new Contact()]));
+    it('loadRawNativeContacts Should get a non-empty list of Native Contacts', (done: DoneFn) => {
+        const fakeNativeContact1: any = { ...nativeContact, name: { givenName: 'fake contact1' } };
+        const fakeNativeContact2: any = { ...nativeContact, name: { givenName: 'fake contact2', familyname: 'fake family name' } };
+        const fakeNativeContact3: any = { ...nativeContact, name: { givenName: 'fake contact3' } };
+        const fakeNativeContactList: any = [fakeNativeContact1, fakeNativeContact2, fakeNativeContact3];
+
+        nativeContactsSpy.find.and.returnValue(Promise.resolve(fakeNativeContactList));
 
         contactsService.loadRawNativeContacts()
             .subscribe(nativeContactList => {
                 expect(nativeContactList).toBeDefined('Native Contac List is not defined');
-                expect(nativeContactList[0] instanceof Contact).toBeTruthy('Native ContacList has no instances of Contact');
+                expect(nativeContactList as any).toEqual(fakeNativeContactList);
                 done();
             });
     });
-    it('Should get an empty list of Native Contacts', (done: DoneFn) => {
+    it('loadRawNativeContacts Should get an empty list of Native Contacts', (done: DoneFn) => {
 
         nativeContactsSpy.find.and.returnValue(Promise.resolve([]));
 
@@ -84,14 +95,14 @@ describe('ContactsService', () => {
                 done();
             });
     });
-    it('Should fail to get Native Contacts', (done: DoneFn) => {
+    it('loadRawNativeContacts Should fail to get Native Contacts', (done: DoneFn) => {
         contactsService.loadRawNativeContacts()
             .subscribe(() => { }, error => {
                 expect(error).toEqual('The Contacts Plugin is not installed');
                 done();
             });
     });
-    it('Should fail to get Native Contacts', (done: DoneFn) => {
+    it('loadRawNativeContacts Should fail to get Native Contacts', (done: DoneFn) => {
         nativeContactsSpy.find.and.rejectWith('The Contacts Plugin is not installed');
 
         contactsService.loadRawNativeContacts()
@@ -101,7 +112,7 @@ describe('ContactsService', () => {
             });
     });
 
-    it('Should pickOne Native Contact', (done: DoneFn) => {
+    it('pickOne Should pickOne Native Contact', (done: DoneFn) => {
 
         nativeContactsSpy.find.and.returnValue(Promise.resolve([nativeContact]));
 
@@ -111,7 +122,7 @@ describe('ContactsService', () => {
                 done();
             });
     });
-    it('Should pickOne empty Native Contact', (done: DoneFn) => {
+    it('pickOne Should pickOne empty Native Contact', (done: DoneFn) => {
 
         nativeContactsSpy.find.and.returnValue(Promise.resolve([nativeContact]));
 
@@ -121,14 +132,14 @@ describe('ContactsService', () => {
                 done();
             });
     });
-    it('Should fail to pickOne Native Contact', (done: DoneFn) => {
+    it('pickOne Should fail to pickOne Native Contact', (done: DoneFn) => {
         contactsService.pickOne('987654321')
             .subscribe(() => { }, (error) => {
                 expect(error).toEqual('The Contacts Plugin is not installed');
                 done();
             });
     });
-    it('Should fail to pickOne Native Contact', (done: DoneFn) => {
+    it('pickOne Should fail to pickOne Native Contact', (done: DoneFn) => {
         nativeContactsSpy.find.and.rejectWith('The Contacts Plugin is not installed');
 
         contactsService.pickOne('987654321')
@@ -138,17 +149,33 @@ describe('ContactsService', () => {
             });
     });
 
-    it('Should find and load Formatted Native Contacts', (done: DoneFn) => {
+    it('loadFormattedNativeContacts Should find and load Formatted Native Contacts', (done: DoneFn) => {
         const searchPhone = '1234567890';
-        const contact = {
-            name: { givenName: 'test', familyName: 'user' },
+
+        const fakeNativeContact1: any = {
+            ...nativeContact,
             phoneNumbers: [{ value: searchPhone }]
         };
+        const fakeNativeContact2: any = {
+            ...nativeContact,
+            name: { familyname: 'fake family name' },
+            phoneNumbers: [{ value: '123' }]
+        };
+        const fakeNativeContact3: any = {
+            ...nativeContact,
+            name: { givenName: 'fake contact3' },
+            phoneNumbers: [{ value: '456' }]
+        };
+        const fakeNativeContactList: any = [
+            fakeNativeContact1,
+            fakeNativeContact2,
+            fakeNativeContact3
+        ];
 
-        const spy = spyOnProperty(contactsStoreSpy, 'Contacts$')
+        const spy = spyOnProperty(mockContactsStore, 'Contacts$')
             .and.returnValue(of([ContactModel.empty()]));
 
-        nativeContactsSpy.find.and.returnValue(Promise.resolve([contact]));
+        nativeContactsSpy.find.and.returnValue(Promise.resolve(fakeNativeContactList));
 
         contactsService.loadFormattedNativeContacts(searchPhone)
             .subscribe((theNativeContact) => {
@@ -158,10 +185,45 @@ describe('ContactsService', () => {
                 done();
             });
     });
-    it('Should load an empty list of Formatted Native Contacts', (done: DoneFn) => {
+    it('loadFormattedNativeContacts Should find and load Formatted Native Contacts', (done: DoneFn) => {
         const searchPhone = '1234567890';
 
-        const spy = spyOnProperty(contactsStoreSpy, 'Contacts$')
+        const fakeNativeContact1: any = {
+            // phoneNumbers: [{ value: searchPhone }]
+        };
+        const fakeNativeContact2: any = {
+            ...nativeContact,
+            name: { familyname: 'fake family name' },
+            phoneNumbers: [{ value: '123' }]
+        };
+        const fakeNativeContact3: any = {
+            ...nativeContact,
+            name: { givenName: 'fake contact3' },
+            phoneNumbers: [{ value: '456' }]
+        };
+        const fakeNativeContactList: any = [
+            fakeNativeContact1,
+            fakeNativeContact2,
+            fakeNativeContact3,
+        ];
+
+        const spy = spyOnProperty(mockContactsStore, 'Contacts$')
+            .and.returnValue(of([ContactModel.empty()]));
+
+        nativeContactsSpy.find.and.returnValue(Promise.resolve(fakeNativeContactList));
+
+        contactsService.loadFormattedNativeContacts(searchPhone)
+            .subscribe((theNativeContact) => {
+                expect(spy).toHaveBeenCalled();
+                expect(nativeContactsSpy.find).toHaveBeenCalled();
+                expect(theNativeContact).toBeTruthy('Native Contac is undefined');
+                done();
+            });
+    });
+    it('loadFormattedNativeContacts Should load an empty list of Formatted Native Contacts', (done: DoneFn) => {
+        const searchPhone = '1234567890';
+
+        const spy = spyOnProperty(mockContactsStore, 'Contacts$')
             .and.returnValue(of([ContactModel.empty()]));
 
         nativeContactsSpy.find.and.returnValue(Promise.resolve([]));
@@ -174,8 +236,8 @@ describe('ContactsService', () => {
                 done();
             });
     });
-    it('Should thow error when getting a list of Formatted Native Contacts', (done: DoneFn) => {
-        const spy = spyOnProperty(contactsStoreSpy, 'Contacts$')
+    it('loadFormattedNativeContacts Should thow error when getting a list of Formatted Native Contacts', (done: DoneFn) => {
+        const spy = spyOnProperty(mockContactsStore, 'Contacts$')
             .and.returnValue(throwError('some bad error'));
 
         nativeContactsSpy.find.and.returnValue(Promise.resolve([]));
@@ -187,15 +249,15 @@ describe('ContactsService', () => {
             });
     });
 
-    it('Should load a non-empty contact list', () => {
+    it('loadRemoteContacts Should load a non-empty contact list', () => {
         contactsService.loadRemoteContacts()
             .subscribe(contactList => {
                 expect(contactList.length).toBeGreaterThan(0, 'ContacList list is empty');
                 expect(contactList[0] instanceof ContactModel).toBeTruthy('ContacList is not an instance of ContactModel[]');
             });
     });
-    it('Should load an empty contact list', () => {
-        nativeContactsSpy = spyOn(contactsRepositoryMock, 'getContacts')
+    it('loadRemoteContacts Should load an empty contact list', () => {
+        nativeContactsSpy = spyOn(mockMontactsRepository, 'getContacts')
             .and.returnValue(of({ data: [], status: 'success' }));
 
         contactsService.loadRemoteContacts()
@@ -204,38 +266,46 @@ describe('ContactsService', () => {
                 expect(contactList.length).toBe(0);
             });
     });
-    it('Should fail to load contact list', () => {
-        nativeContactsSpy = spyOn(contactsRepositoryMock, 'getContacts')
+    it('loadRemoteContacts Should fail to load contact list', () => {
+        nativeContactsSpy = spyOn(mockMontactsRepository, 'getContacts')
             .and.returnValue(throwError(httpError));
 
         contactsService.loadRemoteContacts()
             .subscribe(() => { }, error => onError(error));
     });
 
-    it('Should load country codes', () => {
+    it('loadCountryCodes Should load country codes', () => {
         contactsService.loadCountryCodes()
             .subscribe(countryCodeList => {
                 expect(countryCodeList).toBeDefined();
                 expect(countryCodeList.length).toEqual(250);
             });
     });
-    it('Should fail to load country codes', () => {
-        nativeContactsSpy = spyOn(contactsRepositoryMock, 'getCountryCodes')
+    it('loadCountryCodes Should load an the default list of country codes', () => {
+        const spy = spyOn(mockMontactsRepository, 'getCountryCodes').and.returnValue(of([]));
+        contactsService.loadCountryCodes()
+            .subscribe(countryCodeList => {
+                expect(countryCodeList).toBeDefined();
+                expect(countryCodeList.length).toEqual(COUNTRY_CALLING_CODES.length);
+            });
+    });
+    it('loadCountryCodes Should fail to load country codes', () => {
+        nativeContactsSpy = spyOn(mockMontactsRepository, 'getCountryCodes')
             .and.returnValue(throwError(httpError));
 
         contactsService.loadCountryCodes()
             .subscribe(() => { }, error => onError(error));
     });
 
-    it('Should load a non-empty Interaction list', () => {
+    it('loadContactInteractions Should load a non-empty Interaction list', () => {
         contactsService.loadContactInteractions(42)
             .subscribe(interactionList => {
                 expect(interactionList.length).toBeGreaterThan(0, 'Interaction list is empty');
                 expect(interactionList[0] instanceof ContactInteractionModel).toBeTruthy('Interaction is not an instance of ContactInteractionModel');
             });
     });
-    it('Should load an empty Interaction list', () => {
-        nativeContactsSpy = spyOn(contactsRepositoryMock, 'getContactInteractions')
+    it('loadContactInteractions Should load an empty Interaction list', () => {
+        nativeContactsSpy = spyOn(mockMontactsRepository, 'getContactInteractions')
             .and.returnValue(of({ data: [], status: 'success' }));
 
         contactsService.loadContactInteractions(42)
@@ -244,15 +314,15 @@ describe('ContactsService', () => {
                 expect(interactionList.length).toEqual(0, 'Interaction list length is <> 0');
             });
     });
-    it('Should fail to load an Interaction list', () => {
-        nativeContactsSpy = spyOn(contactsRepositoryMock, 'getContactInteractions')
+    it('loadContactInteractions Should fail to load an Interaction list', () => {
+        nativeContactsSpy = spyOn(mockMontactsRepository, 'getContactInteractions')
             .and.returnValue(throwError(httpError));
 
         contactsService.loadContactInteractions(42)
             .subscribe(() => { }, error => onError(error));
     });
 
-    it('Should create a Contact', () => {
+    it('createContact Should create a Contact', () => {
         const payload: IContactForm = {
             name: 'Andres',
             last_name: 'Vergara',
@@ -266,8 +336,8 @@ describe('ContactsService', () => {
                 expect(contactCreated instanceof ContactModel).toBeTruthy('New Contact is not an instance of ContactModel');
             });
     });
-    it('Should throw error when creating a Contact', () => {
-        nativeContactsSpy = spyOn(contactsRepositoryMock, 'createContact')
+    it('createContact Should throw error when creating a Contact', () => {
+        nativeContactsSpy = spyOn(mockMontactsRepository, 'createContact')
             .and.returnValue(of({ data: {} as any, status: 'success' }));
 
         contactsService.createContact({} as IContactForm)
@@ -275,15 +345,15 @@ describe('ContactsService', () => {
                 expect(error).toBeDefined();
             });
     });
-    it('Should fail to create a Contact', () => {
-        nativeContactsSpy = spyOn(contactsRepositoryMock, 'createContact')
+    it('createContact Should fail to create a Contact', () => {
+        nativeContactsSpy = spyOn(mockMontactsRepository, 'createContact')
             .and.returnValue(throwError(httpError));
 
         contactsService.createContact({} as IContactForm)
             .subscribe(() => { }, error => onError(error));
     });
 
-    it('Should delete a Contact', () => {
+    it('deleteContact Should delete a Contact', () => {
         const contactId = 42;
         contactsService.deleteContact(contactId)
             .subscribe(id => {
@@ -291,15 +361,22 @@ describe('ContactsService', () => {
                 expect(id).toEqual(contactId, 'contact id is not same as sent parameter');
             });
     });
-    it('Should fail to delete a contact', () => {
-        nativeContactsSpy = spyOn(contactsRepositoryMock, 'deleteContact')
+    it('deleteContact Should fail to delete a contact', () => {
+        nativeContactsSpy = spyOn(mockMontactsRepository, 'deleteContact')
+            .and.returnValue(of({ status: 'error' }));
+
+        contactsService.deleteContact(42)
+            .subscribe(() => { }, error => onError(error));
+    });
+    it('deleteContact Should fail to delete a contact', () => {
+        nativeContactsSpy = spyOn(mockMontactsRepository, 'deleteContact')
             .and.returnValue(throwError(httpError));
 
         contactsService.deleteContact(42)
             .subscribe(() => { }, error => onError(error));
     });
 
-    it('Should update a contact', () => {
+    it('updateContact Should update a contact', () => {
         const payload: IContactForm = {
             name: 'Juan',
             last_name: 'Camaney',
@@ -315,15 +392,15 @@ describe('ContactsService', () => {
                 expect(contactCreated instanceof ContactModel).toBeTruthy('Contact is not an instance of ContactModel');
             });
     });
-    it('Should fail to update a contact', () => {
-        nativeContactsSpy = spyOn(contactsRepositoryMock, 'updateContact')
+    it('updateContact Should fail to update a contact', () => {
+        nativeContactsSpy = spyOn(mockMontactsRepository, 'updateContact')
             .and.returnValue(throwError(httpError));
 
         contactsService.updateContact({} as IContactForm)
             .subscribe(() => { }, error => onError(error));
     });
 
-    it('Should import a list of contacts', () => {
+    it('importContacts Should import a list of contacts', () => {
         const payload: IImportContactsForm[] = [{
             addresses: [
                 // { "id": string, "pref": boolean, "type": string, "formatted": string, "streetAddress": string },
@@ -371,15 +448,15 @@ describe('ContactsService', () => {
                 expect(contactList[0] instanceof ContactModel).toBeTruthy('Updated Contact instance mismatches ContactModel type');
             });
     });
-    it('Should fail to import a list of contacts', () => {
-        nativeContactsSpy = spyOn(contactsRepositoryMock, 'importContacts')
+    it('importContacts Should fail to import a list of contacts', () => {
+        nativeContactsSpy = spyOn(mockMontactsRepository, 'importContacts')
             .and.returnValue(throwError(httpError));
 
         contactsService.importContacts([])
             .subscribe(() => { }, error => onError(error));
     });
 
-    it('Should create a contact interaction', () => {
+    it('createInteraction Should create a contact interaction', () => {
         const config: IGenericInteractionProps = {
             action_type: 'create',
             entity: 'contact',
@@ -391,8 +468,8 @@ describe('ContactsService', () => {
                 expect(interaction instanceof ContactInteractionModel).toBeTruthy('Interaction is not an instance of ContactInteractionModel');
             });
     });
-    it('Should fail to create a contact interaction', () => {
-        nativeContactsSpy = spyOn(contactsRepositoryMock, 'createInteraction')
+    it('createInteraction Should fail to create a contact interaction', () => {
+        nativeContactsSpy = spyOn(mockMontactsRepository, 'createInteraction')
             .and.returnValue(throwError(httpError));
 
         contactsService.createInteraction(42, {} as IGenericInteractionProps)

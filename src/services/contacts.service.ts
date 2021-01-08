@@ -79,6 +79,7 @@ export class ContactsService implements IContactsService<Contact, ContactModel> 
 
                     const formattedContacts = contacts
                         .filter(contact => {
+                            contact.name = contact.name || { givenName: '', familyName: '' };
                             return contact.name.givenName
                                 && stored.findIndex(s => s.phone === (contact.phoneNumbers ? contact.phoneNumbers[0].value : '')) === -1;
                         })

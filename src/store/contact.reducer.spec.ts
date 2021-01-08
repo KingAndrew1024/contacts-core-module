@@ -235,7 +235,7 @@ describe('ContactReducer', () => {
             expect(state).toEqual(expectedState);
         });
 
-        fit('DeleteContactSuccessAction', () => {
+        it('DeleteContactSuccessAction', () => {
 
             const item1: ContactModel = {
                 id: 123,

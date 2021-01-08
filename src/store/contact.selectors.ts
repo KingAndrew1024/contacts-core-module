@@ -22,11 +22,7 @@ export const getIsLoading = createSelector(
 
 export const getError = createSelector(
     getContactPageState,
-    (state) => {
-        console.log('getError.state', state);
-
-        return state.error;
-    }
+    state => state.error
 );
 
 export const getSuccess = createSelector(
