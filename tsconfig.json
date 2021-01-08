@@ -14,7 +14,11 @@
   "exclude": [
     "node_modules",
     "dist",
-    "scripts"
+    "scripts",
+    "src/**/*.spec.ts",
+    "src/polyfills.ts",
+    "src/test.ts",
+    "src/mocks"
   ],
   "angularCompilerOptions": {
     "genDir": "aot",
