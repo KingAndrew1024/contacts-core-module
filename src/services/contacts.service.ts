@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { Contact, ContactFieldType, ContactFindOptions, Contacts } from '@ionic-native/contacts';
 import { Observable, Subscriber } from 'rxjs';
 import { catchError, map, withLatestFrom } from 'rxjs/operators';
-import { IContactForm, IContactRepository, ICountryCodes, IGenericInteractionProps, IImportContactsForm } from '../core/contracts/IContact.repository';
+import { IContactApiProps, IContactForm, IContactRepository, ICountryCodes, IGenericInteractionProps } from '../core/contracts/IContact.repository';
 import { IContactsService } from '../core/contracts/IContact.service';
 import { ContactInteractionModel, ContactModel } from '../core/models/contact.model';
 import { COUNTRY_CALLING_CODES } from '../repositories/contacts.repository';
@@ -180,7 +180,7 @@ export class ContactsService implements IContactsService<Contact, ContactModel> 
         );
     }
 
-    importContacts(contactList: IImportContactsForm[]): Observable<Array<ContactModel>> {
+    importContacts(contactList: IContactApiProps[]): Observable<ContactModel[]> {
         return this.repository.importContacts(contactList).pipe(
             map((response) => {
                 return response.data.contacts_exported.map(c => ContactModel.fromDataResponse(c));

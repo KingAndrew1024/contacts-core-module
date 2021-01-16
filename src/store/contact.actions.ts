@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { CONTACT_TYPE, IContactForm, ICountryCodes, IGenericInteractionProps } from '../core/contracts/IContact.repository';
+import { CONTACT_TYPE, IContactApiProps, IContactForm, ICountryCodes, IGenericInteractionProps } from '../core/contracts/IContact.repository';
 import { ContactInteractionModel, ContactModel } from '../core/models/contact.model';
 
 export enum ContactsActionTypes {
@@ -123,7 +123,7 @@ export const UpdateContactFailAction = createAction(
 // Import contacts
 export const ImportContactBeginAction = createAction(
     ContactsActionTypes.ImportContactBegin,
-    props<{ contactList: ContactModel[] }>()
+    props<{ contactList: IContactApiProps[] }>()
 );
 
 export const ImportContactSuccessAction = createAction(

@@ -1,4 +1,5 @@
 node_modules
 dist/
 aot/
+e2e
 coverage

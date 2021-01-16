@@ -69,7 +69,7 @@ export class ContactsRepository implements IContactRepository {
         return this.httpClient.post<IHttpBasicResponse<IContactApiProps>>(`${this.BASE_URL}/update/${payload.id}`, body);
     }
 
-    importContacts(payload: Array<any>): Observable<IHttpBasicResponse<IImportContactsResponse>> {
+    importContacts(payload: IContactApiProps[]): Observable<IHttpBasicResponse<IImportContactsResponse>> {
 
         const data = { export_data: JSON.stringify({ contacts: payload }) };
 

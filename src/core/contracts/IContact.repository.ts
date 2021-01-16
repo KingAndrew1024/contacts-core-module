@@ -8,7 +8,7 @@ export interface IContactRepository {
     createContact(form: IContactForm): Observable<IHttpBasicResponse<IContactApiProps>>;
     deleteContact(contactId: number): Observable<IHttpBasicResponse<string>>; // success | error
     updateContact(form: IContactForm): Observable<IHttpBasicResponse<IContactApiProps>>;
-    importContacts(payload: IImportContactsForm[]): Observable<IHttpBasicResponse<IImportContactsResponse>>;
+    importContacts(payload: IContactApiProps[]): Observable<IHttpBasicResponse<IImportContactsResponse>>;
     createInteraction(contactId: number, config: IGenericInteractionProps): Observable<IHttpBasicResponse<IContactInteractionsApiProps>>;
 }
 export type CONTACT_TYPE = 'ALL' | 'NOT_SPECIFIED' | 'PROSPECT' | 'CLIENT';

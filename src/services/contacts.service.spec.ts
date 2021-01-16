@@ -3,11 +3,11 @@ import { Contact } from '@ionic-native/contacts';
 import {
     ContactInteractionModel,
     ContactModel,
+    IContactApiProps,
     IContactForm,
     IContactRepository,
     IContactsService,
     IGenericInteractionProps,
-    IImportContactsForm,
 } from '../core';
 import { MockContactsRepository } from '../mocks/contacts.respository.mock';
 import { ContactsService } from './contacts.service';
@@ -401,45 +401,41 @@ describe('ContactsService', () => {
     });
 
     it('importContacts Should import a list of contacts', () => {
-        const payload: IImportContactsForm[] = [{
-            addresses: [
-                // { "id": string, "pref": boolean, "type": string, "formatted": string, "streetAddress": string },
-            ],
-            birthday: null,
-            displayName: null,
-            emails: [
-                { id: '1', pref: false, value: 'test@tes.com', type: null },
-            ],
-            name: {
-                familyName: 'Imported',
-                givenName: 'Contact',
-                middleName: null,
-                formatted: 'Imported Contact'
-            },
-            nickname: null,
-            phoneNumbers: [
-                { id: '123', pref: false, value: '9876543210', type: null },
-            ],
-            client_type: 1
+        const payload: IContactApiProps[] = [{
+            id: null,
+            client_id: null,
+            country_code: 'MEX',
+            phone_code: '+52',
+            name: 'some1',
+            last_name: 'name1',
+            type: 'CLIENT',
+            origin: 'MOBILE_APP',
+            email: 'example@mail.com',
+            phone: '1111111111',
+            street_address: null,
+            state_iso: null,
+            city: null,
+            created_at: null,
+            updated_at: null,
+            full_name: null,
         },
         {
-            addresses: [],
-            birthday: null,
-            displayName: null,
-            emails: [
-                { id: '1', pref: false, value: 'other_test@tes.com', type: null },
-            ],
-            name: {
-                familyName: 'Other',
-                givenName: 'Contact',
-                middleName: null,
-                formatted: 'Other Contact'
-            },
-            nickname: null,
-            phoneNumbers: [
-                { id: '123', pref: false, value: '132435364', type: null },
-            ],
-            client_type: 2
+            id: null,
+            client_id: null,
+            country_code: 'MEX',
+            phone_code: '+52',
+            name: 'some2',
+            last_name: 'name2',
+            type: 'CLIENT',
+            origin: 'MOBILE_APP',
+            email: 'example@mail.com',
+            phone: '2222222222',
+            street_address: null,
+            state_iso: null,
+            city: null,
+            created_at: null,
+            updated_at: null,
+            full_name: null,
         }];
 
         contactsService.importContacts(payload)

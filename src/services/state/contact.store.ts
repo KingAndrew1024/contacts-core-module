@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { CONTACT_TYPE, IContactForm, IGenericInteractionProps } from '../../core/contracts/IContact.repository';
+import { CONTACT_TYPE, IContactApiProps, IContactForm, IGenericInteractionProps } from '../../core/contracts/IContact.repository';
 import { ContactModel } from '../../core/models/contact.model';
 import * as fromActions from '../../store/contact.actions';
 import * as fromContacts from '../../store/contact.reducer';
@@ -62,7 +62,7 @@ export class ContactStore {
         return this.store.select(fromSelector.getFilteredContactItems);
     }
 
-    importContacts(contactList: ContactModel[]) {
+    importContacts(contactList: IContactApiProps[]) {
         this.store.dispatch(fromActions.ImportContactBeginAction({ contactList }));
     }
 

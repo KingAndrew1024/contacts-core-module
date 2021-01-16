@@ -36,7 +36,7 @@ export class ContactModel implements IContactModelProps {
     static toApiModel(contact: ContactModel, excludedFields: string[] = []): IContactApiProps {
 
         const payload: IContactApiProps = {
-            id: contact.id.toString(),
+            id: contact.id ? contact.id.toString() : null,
             name: contact.name,
             last_name: contact.lastName || '',
             type: contact.type || 'NOT_SPECIFIED',

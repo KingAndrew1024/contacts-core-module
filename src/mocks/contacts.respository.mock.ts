@@ -94,20 +94,20 @@ export class MockContactsRepository implements IContactRepository {
         return of(responseOk);
     }
 
-    importContacts(payload: IImportContactsForm[]): Observable<IHttpBasicResponse<IImportContactsResponse>> {
+    importContacts(payload: IContactApiProps[]): Observable<IHttpBasicResponse<IImportContactsResponse>> {
         const importedContacts: IContactApiProps[] = [];
 
         payload.forEach((c, index) => {
             importedContacts.push({
                 id: (999 + index).toString(),
                 client_id: (876 + index).toString(),
-                name: c.name.familyName,
-                last_name: c.name.givenName,
+                name: c.name,
+                last_name: c.last_name,
                 type: 'CLIENT',
                 origin: 'MOBILE_APP',
-                email: c.emails[0].value,
+                email: c.email,
                 country_code: 'MEX',
-                phone: c.phoneNumbers[0].value,
+                phone: c.phone,
                 street_address: null,
                 state_iso: null,
                 city: null,
